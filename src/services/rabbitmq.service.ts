@@ -1,9 +1,17 @@
-import {Connection} from 'rabbitmq-client'
+import masstransit from "masstransit-rabbitmq";
 
-export const rabbitmqClient = new Connection(`amqp://admin:${process.env.RABBITMQ_PASSWORD!}@huna-rabbitmq:5672`);
+export const bus = masstransit({
+  host: `admin:${process.env.RABBITMQ_PASSWORD!}@huna-rabbitmq`,
+  virtualHost: '/'
+});
 
-rabbitmqClient.on('error', (err) => {
-  console.error('RabbitMQ connection error', err);
-})
+bus.on('error', err => {
+  console.error('RabbitMQ connectiviy lost');
+  console.error(err);
+});
 
-export default rabbitmqClient;
+bus.on('connect', () => {
+  console.error('RabbitMQ connectiviy achieved');
+});
+
+export default bus;

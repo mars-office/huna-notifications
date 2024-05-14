@@ -1,41 +1,12 @@
-import rabbitmqClient from "../services/rabbitmq.service";
+import bus from "../services/rabbitmq.service";
+import { MessageType } from "masstransit-rabbitmq/dist/messageType";
 
 export const startNotificationRequestConsumer = () => {
-  rabbitmqClient.createConsumer({
-    queue: 'NotificationRequest',
-    queueOptions: {
-      durable: true,
-      autoDelete: false,
-      exclusive: false
-    },
-    exchanges: [
-      {
-        exchange: 'NotificationRequest',
-        durable: true,
-        type: 'fanout',
-      },
-      {
-        exchange: 'Huna.Notifications.Contracts:NotificationRequest',
-        durable: true,
-        type: 'fanout'
-      }
-    ],
-    exchangeBindings: [
-      {
-        source: 'Huna.Notifications.Contracts:NotificationRequest',
-        destination: 'NotificationRequest',
-      }
-    ],
-    queueBindings: [
-      {
-        exchange: 'Huna.Notifications.Contracts:NotificationRequest',
-        queue: 'NotificationRequest'
-      }
-    ]
-    
-  }, async e => {
-    console.log(e);
+  bus.receiveEndpoint(`huna-notifications`, endpoint => {
+    endpoint.handle(new MessageType('NotificationRequest', 'Huna.Notifications.Contracts'), async m => {
+      console.log(m.message);
+    });
   });
-};
+}
 
-export default startNotificationRequestConsumer;
+export default startNotificationRequestConsumer();
