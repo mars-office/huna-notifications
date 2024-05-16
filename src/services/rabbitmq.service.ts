@@ -6,12 +6,12 @@ export const bus = masstransit({
 });
 
 bus.on('error', err => {
-  console.error('RabbitMQ connectiviy lost');
+  console.error('RabbitMQ connectivity lost');
   console.error(err);
 });
 
 bus.on('connect', () => {
-  console.error('RabbitMQ connectivity achieved');
+  console.log('RabbitMQ connectivity achieved');
 });
 
 export default bus;
