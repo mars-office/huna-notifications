@@ -9,4 +9,4 @@ export const startNotificationRequestConsumer = () => {
   });
 }
 
-export default startNotificationRequestConsumer();
+export default startNotificationRequestConsumer;

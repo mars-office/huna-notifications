@@ -5,7 +5,7 @@ const notificationsRouter = Router();
 
 notificationsRouter.get("/api/notifications/notifications", async (req: Request, res: Response) => {
   
-  res.send("OK: " + VERSION);
+  res.send("sdfsdfsdfsdffsd: " + VERSION);
 });
 
 export default notificationsRouter;

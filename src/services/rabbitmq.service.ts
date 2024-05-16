@@ -11,7 +11,7 @@ bus.on('error', err => {
 });
 
 bus.on('connect', () => {
-  console.error('RabbitMQ connectiviy achieved');
+  console.error('RabbitMQ connectivity achieved');
 });
 
 export default bus;
