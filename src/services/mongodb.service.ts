@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-const mongoClient = new MongoClient("mongo://huna-mongodb:27017", {
+const mongoClient = new MongoClient("mongodb://huna-mongodb:27017", {
   appName: "huna-notifications",
   auth: {
     username: "admin",

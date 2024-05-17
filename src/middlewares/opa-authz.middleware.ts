@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Request, Response, NextFunction } from "express";
+import { OpaResponse } from "../contracts/opa-response";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   if (req.url === "/api/notifications/health") {
@@ -16,15 +17,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       type: 'oauth'
     },
   };
-  const response = await axios.post(
+  const response = await axios.post<OpaResponse>(
     `http://127.0.0.1:8181/v1/data/com/huna/authz`,
     opaRequest
   );
   const opaResponse = response.data?.result;
   if (opaResponse && opaResponse.allow) {
     if (opaResponse.user) {
-      (req as any).user = opaResponse.user;
-      (req as any).user.isAdmin = opaResponse.is_admin || false;
+      req.user = opaResponse.user;
+      req.user.isAdmin = opaResponse.is_admin || false;
     }
     next();
   } else {
