@@ -37,7 +37,8 @@ notificationsRouter.get("/api/notifications/notifications", async (req: Request,
     userEmail: req.user!.email
   }, {
     skip: start,
-    sort: sortConfig
+    sort: sortConfig,
+    limit: count
   }).toArray()).map(e => ({
     issuedAt: e.issuedAt,
     _id: e._id.toString(),
