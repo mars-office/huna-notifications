@@ -1,5 +1,6 @@
 import './services/env.loader';
 import express, { Application } from "express";
+import 'express-async-errors';
 import morgan from "morgan";
 import opaAuthzMiddleware from "./middlewares/opa-authz.middleware";
 import globalErrorHandlerMiddleware from "./middlewares/global-error-handler.middleware";
