@@ -50,7 +50,7 @@ notificationsRouter.get("/api/notifications/notifications", async (req: Request,
   res.send(notificationDtos);
 });
 
-notificationsRouter.get("/api/notifications/unread", async (req: Request, res: Response) => {
+notificationsRouter.get("/api/notifications/notifications/unread", async (req: Request, res: Response) => {
   const reply: UnreadNotificationsDto = {
     count: 0
   };
@@ -80,7 +80,7 @@ notificationsRouter.put("/api/notifications/notifications", async (req: Request,
   res.send(reply);
 });
 
-notificationsRouter.put("/api/notifications/:id", async (req: Request, res: Response) => {
+notificationsRouter.put("/api/notifications/notifications/:id", async (req: Request, res: Response) => {
   const notificationsCollection = db.collection<NotificationEntity>("notifications");
   const now = new Date().toISOString();
   const updateResult = await notificationsCollection.updateOne({
