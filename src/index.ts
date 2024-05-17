@@ -5,7 +5,6 @@ import morgan from "morgan";
 import opaAuthzMiddleware from "./middlewares/opa-authz.middleware";
 import globalErrorHandlerMiddleware from "./middlewares/global-error-handler.middleware";
 import healthCheckRouter from "./routes/health-check.route";
-import { startNotificationRequestConsumer } from './consumers/notification-request.consumer';
 import notificationsRouter from './routes/notifications.route';
 
 const env = process.env.NODE_ENV || "local";
@@ -34,4 +33,4 @@ process.on("SIGINT", () => {
   process.exit();
 });
 
-startNotificationRequestConsumer();
+import './consumers/notification-request.consumer';
