@@ -1,10 +1,13 @@
-import { ConsumeContext } from "masstransit-rabbitmq/dist/consumeContext";
 import { NotificationRequest } from "../contracts/notification-request";
+import bus from "../services/masstransit.service";
+import { MessageType } from "masstransit-rabbitmq/dist/messageType";
 
-export const notificationRequestConsumer = async (message: ConsumeContext<NotificationRequest>) => {
-  console.log(message.message);
-  console.log(message.headers);
-  console.log(message.sentTime);
+export const startNotificationRequestConsumer = () => {
+  bus.asyncReceiveEndpoint('huna-notifications', endpoint => {
+    endpoint.handle<NotificationRequest>(new MessageType('NotificationRequest', 'Huna.Notifications.Contracts'),
+      async context => {
+        console.log(context.message);
+      });
+  });
 }
-
-export default notificationRequestConsumer;
+export default startNotificationRequestConsumer;

@@ -30,13 +30,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
-    "masstransit-rabbitmq": "github:MassTransit/MassTransit-JS#master",
+    "masstransit-rabbitmq": "github:alinflorin/MassTransit-JS#master",
     "mongodb": "^6.6.1",
     "morgan": "^1.10.0"
-  },
-  "overrides": {
-    "masstransit-rabbitmq": {
-      "amqplib": "^0.10.4"
-    }
   }
 }
