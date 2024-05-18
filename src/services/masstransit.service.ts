@@ -1,6 +1,4 @@
-import { Connection } from "amqplib";
 import masstransit, { Bus } from "masstransit-rabbitmq";
-import { ConnectionContext } from "masstransit-rabbitmq/dist/connectionContext";
 import { ConsumeContext } from "masstransit-rabbitmq/dist/consumeContext";
 import { MessageType } from "masstransit-rabbitmq/dist/messageType";
 
@@ -25,44 +23,30 @@ export class MassTransitService {
       console.error(err);
     });
 
-    this._bus.on("connect", (ctx: ConnectionContext) => {
+    this._bus.on("connect", () => {
       console.log("RabbitMQ connectivity achieved");
-      (async () => {
-        console.log("Creating queue and exchanges...");
-        const conn: Connection = ctx.connection;
-        const channel = await conn.createChannel();
-        for (let pair of this._registeredConsumers) {
-          console.log(
-            "Creating queue exchange pair:" +
-              pair.messageType.toString() +
-              "->" +
-              pair.queue
-          );
-          await channel.assertQueue(pair.queue, { durable: true });
-          await channel.assertExchange(
-            pair.messageType.ns + ":" + pair.messageType.name,
-            "fanout",
-            { durable: true }
-          );
-          await channel.bindQueue(
-            pair.queue,
-            pair.messageType.ns + ":" + pair.messageType.name,
-            ""
-          );
-
-          console.log("Created");
-        }
-        channel.close();
-        console.log("Created all");
-      })();
     });
 
     for (let pair of this._registeredConsumers) {
       this._bus!.receiveEndpoint(pair.queue, (endpoint) => {
+        const oldCt = (endpoint as any).configureTopology;
+        (endpoint as any).configureTopology = async (channel: any) => {
+          for (const messageType of (endpoint as any).boundEvents) {
+            await channel.assertExchange(messageType.toExchange(), 'fanout', (endpoint as any).options);
+          }
+          await (oldCt.bind(endpoint)(channel));
+        }
         endpoint.handle<any>(
           pair.messageType,
-          async (m) => {
-            await pair.consumer(m);
+          (m) => {
+            (async () => {
+              try {
+                await pair.consumer(m);
+              } catch (e) {
+                console.error(e);
+                throw e;
+              }
+            })();
           }
         );
       });
