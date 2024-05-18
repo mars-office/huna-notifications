@@ -6,6 +6,9 @@ import opaAuthzMiddleware from "./middlewares/opa-authz.middleware";
 import globalErrorHandlerMiddleware from "./middlewares/global-error-handler.middleware";
 import healthCheckRouter from "./routes/health-check.route";
 import notificationsRouter from './routes/notifications.route';
+import {notificationRequestConsumer} from './consumers/notification-request.consumer';
+import { MassTransitService } from './services/masstransit.service';
+import { MessageType } from 'masstransit-rabbitmq/dist/messageType';
 
 const env = process.env.NODE_ENV || "local";
 const app: Application = express();
@@ -33,4 +36,6 @@ process.on("SIGINT", () => {
   process.exit();
 });
 
-import './consumers/notification-request.consumer';
+const mt = new MassTransitService();
+mt.registerConsumer('huna-notifications', new MessageType('NotificationRequest', 'Huna.Notifications.Contracts'), notificationRequestConsumer);
+mt.start();
