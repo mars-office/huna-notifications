@@ -1,6 +1,7 @@
 import { Connection } from "amqplib";
 import masstransit, { Bus } from "masstransit-rabbitmq";
 import { ConnectionContext } from "masstransit-rabbitmq/dist/connectionContext";
+import { ConsumeContext } from "masstransit-rabbitmq/dist/consumeContext";
 import { MessageType } from "masstransit-rabbitmq/dist/messageType";
 
 export class MassTransitService {
@@ -8,7 +9,7 @@ export class MassTransitService {
   private _registeredConsumers: {
     queue: string;
     messageType: MessageType;
-    consumer: (message: any) => Promise<void>
+    consumer: (message: ConsumeContext<any>) => Promise<void>
   }[] = [];
 
   constructor() {}
@@ -83,7 +84,7 @@ export class MassTransitService {
     await this._bus.restart();
   }
 
-  registerConsumer<T>(queue: string, messageType: MessageType, consumer: (message: T) => Promise<void>) {
+  registerConsumer<T extends object>(queue: string, messageType: MessageType, consumer: (message: ConsumeContext<T>) => Promise<void>) {
     this._registeredConsumers.push({
       queue,
       messageType,
