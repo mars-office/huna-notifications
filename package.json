@@ -25,7 +25,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@opentelemetry/auto-instrumentations-node": "^0.44.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.46.1",
     "@opentelemetry/instrumentation-grpc": "^0.50.0",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
