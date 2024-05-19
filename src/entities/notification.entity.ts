@@ -3,6 +3,7 @@ import { NotificationSeverity } from "../contracts/notification-severity";
 
 export interface NotificationEntity {
   _id?: ObjectId;
+  requestId: string;
   userEmail: string;
   title: string;
   message: string;
