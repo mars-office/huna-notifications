@@ -163,11 +163,14 @@ export const startNotificationRequestConsumer = () => {
             console.log(`Sending email notification ${dto._id}`);
             const url = process.env.UI_URL! + "/fromNotification/" + dto._id!;
             const body = `${context.message.message}<br /><br /><a href="${url}">${url}</a>`;
-            await sendEmail(
+            const reply = await sendEmail(
               context.message.toUserEmail,
               context.message.title,
               body
             );
+            if (reply.response.status !== 200) {
+              throw new Error('Email sending failed');
+            }
             console.log("Sent");
             (context.originalMessage.properties.headers as any).emailSent =
               "yes";

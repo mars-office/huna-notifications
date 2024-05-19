@@ -7,8 +7,7 @@
     "start": "tsx watch ./src/index.ts",
     "build": "tsc",
     "prod": "node --require @opentelemetry/auto-instrumentations-node/register dist/index.js",
-    "test": "jest --coverage",
-    "debug": "tsx ./src/debug.ts"
+    "test": "jest --coverage"
   },
   "author": "",
   "license": "ISC",
