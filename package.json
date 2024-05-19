@@ -17,6 +17,7 @@
     "@types/jest": "^29.5.12",
     "@types/morgan": "^1.9.9",
     "@types/supertest": "^6.0.2",
+    "@types/web-push": "^3.6.3",
     "jest": "^29.7.0",
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
@@ -32,6 +33,7 @@
     "express-async-errors": "^3.1.1",
     "masstransit-rabbitmq": "github:alinflorin/MassTransit-JS#master",
     "mongodb": "^6.6.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "web-push": "^3.6.7"
   }
 }

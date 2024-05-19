@@ -7,6 +7,7 @@ import globalErrorHandlerMiddleware from "./middlewares/global-error-handler.mid
 import healthCheckRouter from "./routes/health-check.route";
 import notificationsRouter from './routes/notifications.route';
 import startNotificationRequestConsumer from './consumers/notification-request.consumer';
+import pushSubscriptionsRouter from './routes/push-subscriptions.route';
 
 const env = process.env.NODE_ENV || "local";
 const app: Application = express();
@@ -22,9 +23,15 @@ app.use(healthCheckRouter);
 app.use(opaAuthzMiddleware);
 
 app.use(notificationsRouter);
+app.use(pushSubscriptionsRouter);
+
+app.use('*', (_, res) => {
+  res.status(404).json({global: ['api.global.notFound']});
+});
 
 // Error handler, should always be LAST use()
 app.use(globalErrorHandlerMiddleware);
+
 
 app.listen(3003, () => {
   console.log(`Server is listening on http://localhost:3003`);
