@@ -10,8 +10,8 @@ export const sendEmail = async (to: string, subject: string, htmlBody: string) =
     Messages: [
       {
         From: {
-          Email: "noreply@huna2.com",
-          Name: "Huna2" + (!process.env.NODE_ENV || process.env.NODE_ENV! === 'prod' ? '' : (' ' + process.env.NODE_ENV!)),
+          Email: process.env.FROM_EMAIL!,
+          Name: "huna2" + (!process.env.NODE_ENV || process.env.NODE_ENV! === 'prod' ? '' : (' ' + process.env.NODE_ENV!)),
         },
         To: [
           {
