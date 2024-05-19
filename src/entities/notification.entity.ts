@@ -11,4 +11,5 @@ export interface NotificationEntity {
   createdAt: string;
   readAt?: string;
   severity: NotificationSeverity;
+  data?: any;
 }

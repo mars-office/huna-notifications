@@ -7,4 +7,5 @@ export interface NotificationDto {
   issuedAt: string;
   readAt?: string;
   severity: NotificationSeverity;
+  data?: any;
 }

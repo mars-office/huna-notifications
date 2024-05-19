@@ -29,15 +29,16 @@ export const startNotificationRequestConsumer = () => {
         new MessageType("NotificationRequest", "Huna.Notifications.Contracts"),
         async (context) => {
           const now = new Date().toString();
+          if (!context.originalMessage.properties.headers) {
+            context.originalMessage.properties.headers = {};
+          }
           const notificationsCollection =
             db.collection<NotificationEntity>("notifications");
 
           // DB
-          let notification: NotificationEntity | null =
-            await notificationsCollection.findOne({
-              requestId: context.messageId!,
-            });
-          if (!notification) {
+          let notification: NotificationEntity | null;
+
+          if (!(context.headers! as any).insertedInDb) {
             notification = {
               createdAt: now,
               issuedAt: context.sentTime!,
@@ -46,11 +47,20 @@ export const startNotificationRequestConsumer = () => {
               requestId: context.messageId!,
               severity: context.message.severity,
               userEmail: context.message.toUserEmail,
+              data: context.message.data
             };
             const insertResult = await notificationsCollection.insertOne(
               notification
             );
             notification._id = insertResult.insertedId;
+            (context.originalMessage.properties.headers as any).insertedInDb = 'yes';
+          } else {
+            notification = await notificationsCollection.findOne({requestId: context.messageId!});
+          }
+
+          if (!notification) {
+            console.error(`Notification cannot be inserted in the database or was not found. MessageId: ${context.messageId}`);
+            return;
           }
 
           const dto: NotificationDto = {
@@ -60,10 +70,11 @@ export const startNotificationRequestConsumer = () => {
             severity: notification.severity,
             title: notification.title,
             readAt: notification.readAt,
+            data: notification.data
           };
 
           // SignalR
-          if (context.message.deliveryTypes.includes("signalr")) {
+          if (context.message.deliveryTypes.includes("signalr") && !(context.headers as any).signalrSent) {
             await signalrSendEndpoint.send<
               SendSignalrMessageRequest<NotificationDto>
             >({
@@ -71,10 +82,11 @@ export const startNotificationRequestConsumer = () => {
               receiverType: "user",
               to: notification.userEmail,
             });
+            (context.originalMessage.properties.headers as any).signalrSent = 'yes';
           }
 
           // Push
-          if (context.message.deliveryTypes.includes("push")) {
+          if (context.message.deliveryTypes.includes("push") && !(context.headers as any).pushSent) {
             const pushSubscriptionsCollection =
               db.collection<PushSubscriptionEntity>("pushSubscriptions");
             const lastFivePushSubscriptionsForUser =
@@ -115,11 +127,15 @@ export const startNotificationRequestConsumer = () => {
                 console.error('Error on delete expired pushSubscription', err);
               }
             }
+            (context.originalMessage.properties.headers as any).pushSent = 'yes';
           }
 
           // Email
-          if (context.message.deliveryTypes.includes("email")) {
-            await sendEmail(context.message.toUserEmail, context.message.title, context.message.message);
+          if (context.message.deliveryTypes.includes("email") && !(context.headers as any).emailSent) {
+            const url = process.env.UI_URL! + '/fromNotification/' + dto._id!;
+            const body = `${context.message.message}<br /><br /><a href="${url}">${url}</a>`;
+            await sendEmail(context.message.toUserEmail, context.message.title, body);
+            (context.originalMessage.properties.headers as any).emailSent = 'yes';
           }
         }
       );
