@@ -34,6 +34,7 @@
     "masstransit-rabbitmq": "github:alinflorin/MassTransit-JS#master",
     "mongodb": "^6.6.1",
     "morgan": "^1.10.0",
+    "node-mailjet": "^6.0.5",
     "web-push": "^3.6.7"
   }
 }

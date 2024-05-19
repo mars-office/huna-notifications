@@ -8,7 +8,7 @@ import { SendSignalrMessageRequest } from "../contracts/send-signalr-message-req
 import { PushSubscriptionEntity } from "../entities/push-subscription.entity";
 import sendPushNotification from "../services/web-push.service";
 import { ObjectId } from "mongodb";
-import { WebPushError } from "web-push";
+import sendEmail from "../services/mail.service";
 
 export const startNotificationRequestConsumer = () => {
   const signalrSendMessageRequestMessageType = new MessageType(
@@ -119,6 +119,7 @@ export const startNotificationRequestConsumer = () => {
 
           // Email
           if (context.message.deliveryTypes.includes("email")) {
+            await sendEmail(context.message.toUserEmail, context.message.title, context.message.message);
           }
         }
       );
