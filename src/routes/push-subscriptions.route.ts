@@ -3,8 +3,7 @@ import { AddPushSubscriptionDto } from "../contracts/add-push-subscription.dto";
 import db from "../services/mongodb.service";
 import { PushSubscriptionEntity } from "../entities/push-subscription.entity";
 import { AddPushSubscriptionResponseDto } from "../contracts/add-push-subscription-response.dto";
-import { ObjectId } from "mongodb";
-import { DeletePushSubscription } from "../contracts/delete-push-subscription.dto";
+import { DeletePushSubscriptionDto } from "../contracts/delete-push-subscription.dto";
 import { DeletePushSubscriptionResponseDto } from "../contracts/delete-push-subscription-response.dto";
 
 const pushSubscriptionsRouter = Router();
@@ -63,7 +62,7 @@ pushSubscriptionsRouter.post(
 );
 
 pushSubscriptionsRouter.put('/api/notifications/pushSubscriptions/delete', async (req, res) => {
-  const dto: DeletePushSubscription = req.body;
+  const dto: DeletePushSubscriptionDto = req.body;
   if (!dto.json) {
     res.status(400).send({
       global: ["api.notifications.pushSubscriptions.invalidJson"],

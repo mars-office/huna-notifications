@@ -1,3 +1,3 @@
-export interface DeletePushSubscription {
+export interface DeletePushSubscriptionDto {
   json: string;
 }
