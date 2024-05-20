@@ -5,8 +5,15 @@ import { PushSubscriptionEntity } from "../entities/push-subscription.entity";
 import { AddPushSubscriptionResponseDto } from "../contracts/add-push-subscription-response.dto";
 import { DeletePushSubscriptionDto } from "../contracts/delete-push-subscription.dto";
 import { DeletePushSubscriptionResponseDto } from "../contracts/delete-push-subscription-response.dto";
+import { PublicVapidKeyResponseDto } from "../contracts/public-vapid-key-response.dto";
 
 const pushSubscriptionsRouter = Router();
+
+pushSubscriptionsRouter.get(`/api/notifications/pushSubscriptions/publicVapidKey`, (req, res) => {
+  res.send({
+    publicVapidKey: process.env.PUBLIC_VAPID_KEY!
+  } as PublicVapidKeyResponseDto);
+});
 
 pushSubscriptionsRouter.post(
   "/api/notifications/pushSubscriptions",
