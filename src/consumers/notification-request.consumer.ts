@@ -93,9 +93,12 @@ export const startNotificationRequestConsumer = () => {
           ) {
             console.log(`Sending SignalR notification ${dto._id}`);
             await signalrSendEndpoint.send<
-              SendSignalrMessageRequest<NotificationDto>
+              SendSignalrMessageRequest
             >({
-              payload: dto,
+              message: {
+                type: 'Huna.Notifications.Contracts.NotificationDto',
+                payload: dto
+              },
               receiverType: "user",
               to: notification.userEmail,
             });

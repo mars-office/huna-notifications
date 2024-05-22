@@ -1,5 +1,7 @@
-export interface SendSignalrMessageRequest<T> {
+import { SignalrMessage } from "./signalr-message";
+
+export interface SendSignalrMessageRequest {
   receiverType: string;
   to?: string;
-  payload: T;
+  message: SignalrMessage;
 }
