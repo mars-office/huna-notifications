@@ -33,10 +33,22 @@ export const startNotificationRequestConsumer = () => {
           if (!context.originalMessage.properties.headers) {
             context.originalMessage.properties.headers = {};
           }
+          
+          // Validation
+          if (
+            !context.message.toUserEmail || context.message.toUserEmail === '' ||
+            !context.message.title || context.message.title === '' ||
+            !context.message.message || context.message.message === ''
+          ) {
+            console.error('Request rejected permanently as it failed basic validation: ' + context.messageId);
+            return;
+          }
+
+
+          // DB
           const notificationsCollection =
             db.collection<NotificationEntity>("notifications");
 
-          // DB
           let notification: NotificationEntity | null;
 
           if (!(context.headers! as any).insertedInDb) {
@@ -49,7 +61,7 @@ export const startNotificationRequestConsumer = () => {
               message: context.message.message,
               title: context.message.title,
               requestId: context.messageId!,
-              severity: context.message.severity,
+              severity: context.message.severity || 'info',
               userEmail: context.message.toUserEmail,
               data: context.message.data,
             };
