@@ -8,4 +8,5 @@ export interface NotificationDto {
   readAt?: string;
   severity: NotificationSeverity;
   data?: any;
+  url?: string;
 }

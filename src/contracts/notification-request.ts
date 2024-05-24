@@ -8,5 +8,6 @@ export interface NotificationRequest {
   issuedAt: string;
   severity: NotificationSeverity;
   deliveryTypes: DeliveryType[];
+  url?: string;
   data?: any;
 }

@@ -33,17 +33,22 @@ export const startNotificationRequestConsumer = () => {
           if (!context.originalMessage.properties.headers) {
             context.originalMessage.properties.headers = {};
           }
-          
+
           // Validation
           if (
-            !context.message.toUserEmail || context.message.toUserEmail === '' ||
-            !context.message.title || context.message.title === '' ||
-            !context.message.message || context.message.message === ''
+            !context.message.toUserEmail ||
+            context.message.toUserEmail === "" ||
+            !context.message.title ||
+            context.message.title === "" ||
+            !context.message.message ||
+            context.message.message === ""
           ) {
-            console.error('Request rejected permanently as it failed basic validation: ' + context.messageId);
+            console.error(
+              "Request rejected permanently as it failed basic validation: " +
+                context.messageId
+            );
             return;
           }
-
 
           // DB
           const notificationsCollection =
@@ -61,9 +66,10 @@ export const startNotificationRequestConsumer = () => {
               message: context.message.message,
               title: context.message.title,
               requestId: context.messageId!,
-              severity: context.message.severity || 'info',
+              severity: context.message.severity || "info",
               userEmail: context.message.toUserEmail,
               data: context.message.data,
+              url: context.message.url,
             };
             const insertResult = await notificationsCollection.insertOne(
               notification
@@ -94,6 +100,7 @@ export const startNotificationRequestConsumer = () => {
             title: notification.title,
             readAt: notification.readAt,
             data: notification.data,
+            url: notification.url,
           };
 
           console.log(`Notification ID: ` + dto._id);
@@ -104,12 +111,10 @@ export const startNotificationRequestConsumer = () => {
             !(context.headers as any).signalrSent
           ) {
             console.log(`Sending SignalR notification ${dto._id}`);
-            await signalrSendEndpoint.send<
-              SendSignalrMessageRequest
-            >({
+            await signalrSendEndpoint.send<SendSignalrMessageRequest>({
               message: {
-                type: 'Huna.Notifications.Contracts.NotificationDto',
-                payload: dto
+                type: "Huna.Notifications.Contracts.NotificationDto",
+                payload: dto,
               },
               receiverType: "user",
               to: notification.userEmail,
@@ -144,7 +149,20 @@ export const startNotificationRequestConsumer = () => {
             const idsToDelete: ObjectId[] = [];
             for (let ps of lastFivePushSubscriptionsForUser) {
               try {
-                const sendPushResult = await sendPushNotification(ps.json, dto);
+                const pushDto: NotificationDto = {
+                  issuedAt: dto.issuedAt,
+                  message: dto.message,
+                  data: dto.data,
+                  url: dto.url ? process.env.UI_URL! + dto.url : undefined,
+                  severity: dto.severity,
+                  title: dto.title,
+                  _id: dto._id,
+                  readAt: dto.readAt,
+                };
+                const sendPushResult = await sendPushNotification(
+                  ps.json,
+                  pushDto
+                );
                 if (sendPushResult.statusCode === 404) {
                   idsToDelete.push(ps._id);
                 }
@@ -176,15 +194,24 @@ export const startNotificationRequestConsumer = () => {
             !(context.headers as any).emailSent
           ) {
             console.log(`Sending email notification ${dto._id}`);
-            const url = process.env.UI_URL! + "/fromNotification/" + dto._id!;
-            const body = `${context.message.message}<br /><br /><a href="${url}">${url}</a>`;
+
+            let body = `${context.message.message}`;
+            if (dto.url) {
+              const url =
+                process.env.UI_URL! +
+                "/fromNotification/" +
+                dto._id! +
+                "?returnTo=" +
+                encodeURIComponent(dto.url!);
+              body = body + `<br /><br /><a href="${url}">${url}</a>`;
+            }
             const reply = await sendEmail(
               context.message.toUserEmail,
               context.message.title,
               body
             );
             if (reply.response.status !== 200) {
-              throw new Error('Email sending failed');
+              throw new Error("Email sending failed");
             }
             console.log("Sent");
             (context.originalMessage.properties.headers as any).emailSent =
