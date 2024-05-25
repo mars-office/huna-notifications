@@ -163,7 +163,7 @@ export const startNotificationRequestConsumer = () => {
                   ps.json,
                   pushDto
                 );
-                if (sendPushResult.statusCode === 404) {
+                if (sendPushResult.statusCode > 400) {
                   idsToDelete.push(ps._id);
                 }
               } catch (err: any) {
