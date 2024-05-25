@@ -168,7 +168,7 @@ export const startNotificationRequestConsumer = () => {
                 }
               } catch (err: any) {
                 console.error("Error on push", err);
-                if (err.statusCode && err.statusCode === 404) {
+                if (err.statusCode && err.statusCode > 400) {
                   idsToDelete.push(ps._id);
                 }
               }
