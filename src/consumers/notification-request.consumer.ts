@@ -65,7 +65,7 @@ export const startNotificationRequestConsumer = () => {
 
             let notification: NotificationEntity | null;
 
-            if (!(context.headers! as any).insertedInDb) {
+            if (!context.originalMessage.properties.headers.insertedInDb) {
               console.log(
                 `Inserting notification for request id ${context.messageId} into database`
               );
@@ -85,8 +85,7 @@ export const startNotificationRequestConsumer = () => {
               );
               console.log("Inserted");
               notification._id = insertResult.insertedId;
-              (context.originalMessage.properties.headers as any).insertedInDb =
-                "yes";
+              context.originalMessage.properties.headers.insertedInDb = "yes";
             } else {
               console.log("Notification already present in DB");
               notification = await notificationsCollection.findOne({
@@ -117,7 +116,7 @@ export const startNotificationRequestConsumer = () => {
             // SignalR
             if (
               context.message.deliveryTypes.includes("signalr") &&
-              !(context.headers as any).signalrSent
+              !context.originalMessage.properties.headers.signalrSent
             ) {
               console.log(`Sending SignalR notification ${dto._id}`);
               await signalrSendEndpoint.send<SendSignalrMessageRequest>({
@@ -129,14 +128,13 @@ export const startNotificationRequestConsumer = () => {
                 to: notification.userEmail,
               });
               console.log(`Sent.`);
-              (context.originalMessage.properties.headers as any).signalrSent =
-                "yes";
+              context.originalMessage.properties.headers.signalrSent = "yes";
             }
 
             // Push
             if (
               context.message.deliveryTypes.includes("push") &&
-              !(context.headers as any).pushSent
+              !context.originalMessage.properties.headers.pushSent
             ) {
               console.log(`Sending push notification ${dto._id}`);
               const pushSubscriptionsCollection =
@@ -202,14 +200,13 @@ export const startNotificationRequestConsumer = () => {
                 }
               }
               console.log("Sent");
-              (context.originalMessage.properties.headers as any).pushSent =
-                "yes";
+              context.originalMessage.properties.headers.pushSent = "yes";
             }
 
             // Email
             if (
               context.message.deliveryTypes.includes("email") &&
-              !(context.headers as any).emailSent
+              !context.originalMessage.properties.headers.emailSent
             ) {
               console.log(`Sending email notification ${dto._id}`);
 
@@ -232,8 +229,7 @@ export const startNotificationRequestConsumer = () => {
                 throw new Error("Email sending failed");
               }
               console.log("Sent");
-              (context.originalMessage.properties.headers as any).emailSent =
-                "yes";
+              context.originalMessage.properties.headers.emailSent = "yes";
             }
 
             console.log(
