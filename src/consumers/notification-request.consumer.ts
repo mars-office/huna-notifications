@@ -154,24 +154,18 @@ export const startNotificationRequestConsumer = () => {
                   )
                   .toArray();
               const idsToDelete: ObjectId[] = [];
+              const pushDto: NotificationDto = {
+                issuedAt: dto.issuedAt,
+                message: dto.message,
+                data: dto.data,
+                url: dto.url,
+                severity: dto.severity,
+                title: dto.title,
+                _id: dto._id,
+                readAt: dto.readAt,
+              };
               for (let ps of lastFivePushSubscriptionsForUser) {
                 try {
-                  const pushDto: NotificationDto = {
-                    issuedAt: dto.issuedAt,
-                    message: dto.message,
-                    data: dto.data,
-                    url: dto.url
-                      ? process.env.UI_URL! +
-                        "/fromNotification/" +
-                        dto._id! +
-                        "?returnTo=" +
-                        encodeURIComponent(dto.url)
-                      : undefined,
-                    severity: dto.severity,
-                    title: dto.title,
-                    _id: dto._id,
-                    readAt: dto.readAt,
-                  };
                   const sendPushResult = await sendPushNotification(
                     ps.json,
                     pushDto
