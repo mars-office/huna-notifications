@@ -158,7 +158,13 @@ export const startNotificationRequestConsumer = () => {
                 issuedAt: dto.issuedAt,
                 message: dto.message,
                 data: dto.data,
-                url: dto.url,
+                url: dto.url
+                ? process.env.UI_URL! +
+                  "/fromNotification/" +
+                  dto._id! +
+                  "?returnTo=" +
+                  encodeURIComponent(dto.url)
+                : undefined,
                 severity: dto.severity,
                 title: dto.title,
                 _id: dto._id,
