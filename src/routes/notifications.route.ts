@@ -45,7 +45,8 @@ notificationsRouter.get("/api/notifications/notifications", async (req: Request,
     message: e.message,
     severity: e.severity,
     title: e.title,
-    readAt: e.readAt
+    readAt: e.readAt,
+    url: e.url
   } as NotificationDto));
 
   res.send(notificationDtos);
