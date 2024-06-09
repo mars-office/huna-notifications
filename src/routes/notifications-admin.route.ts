@@ -18,7 +18,7 @@ const notificationsSendEndpoint = bus.sendEndpoint({
 
 const notificationsAdminRouter = Router();
 
-notificationsAdminRouter.get(
+notificationsAdminRouter.post(
   "/api/notifications/admin/send",
   async (req: Request, res: Response) => {
     const dto: SendCustomNotificationDto = req.body;
