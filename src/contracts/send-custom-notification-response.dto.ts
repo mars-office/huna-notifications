@@ -1,3 +1,4 @@
 export interface SendCustomNotificationResponseDto {
-  success: boolean;
+  sent: string[];
+  errored: string[]
 }

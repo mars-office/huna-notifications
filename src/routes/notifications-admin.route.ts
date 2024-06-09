@@ -28,8 +28,8 @@ notificationsAdminRouter.get(
       dto.message.length === 0 ||
       !dto.title ||
       dto.title.length === 0 ||
-      !dto.toUserEmail ||
-      dto.toUserEmail.length === 0
+      !dto.toUserEmails ||
+      dto.toUserEmails.length === 0
     ) {
       res.status(400).send({
         global: ["api.notifications.admin.send.invalidPayload"],
@@ -37,30 +37,34 @@ notificationsAdminRouter.get(
       return;
     }
 
-    const requestPayload: NotificationRequest = {
-      toUserEmail: dto.toUserEmail,
-      deliveryTypes: dto.deliveryTypes || [],
-      issuedAt: now,
-      severity: dto.severity || "info",
-      message: dto.message,
-      title: dto.title,
-      data: dto.data,
-      url: dto.url,
-    };
+    let sent: string[] = [];
+    let errored: string[] = [];
 
-    try {
-      await notificationsSendEndpoint.send(requestPayload);
-    } catch (err: any) {
-      // ignored
-      console.error('MQ error', err);
-      res.status(500).send({
-        global: ["api.notifications.admin.send.messageError"],
-      });
-      return;
+    for (const toUserEmail of dto.toUserEmails) {
+      const requestPayload: NotificationRequest = {
+        toUserEmail: toUserEmail,
+        deliveryTypes: dto.deliveryTypes || [],
+        issuedAt: now,
+        severity: dto.severity || "info",
+        message: dto.message,
+        title: dto.title,
+        data: dto.data,
+        url: dto.url,
+      };
+  
+      try {
+        await notificationsSendEndpoint.send(requestPayload);
+        sent.push(toUserEmail);
+      } catch (err: any) {
+        // ignored
+        console.error('MQ error', err);
+        errored.push(toUserEmail);
+      }
     }
 
     const reply: SendCustomNotificationResponseDto = {
-      success: true
+      sent: sent,
+      errored: errored
     };
     res.send(reply);
   }
