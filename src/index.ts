@@ -8,6 +8,7 @@ import healthCheckRouter from "./routes/health-check.route";
 import notificationsRouter from './routes/notifications.route';
 import startNotificationRequestConsumer from './consumers/notification-request.consumer';
 import pushSubscriptionsRouter from './routes/push-subscriptions.route';
+import notificationsAdminRouter from './routes/notifications-admin.route';
 
 const env = process.env.NODE_ENV || "local";
 const app: Application = express();
@@ -24,6 +25,7 @@ app.use(opaAuthzMiddleware);
 
 app.use(notificationsRouter);
 app.use(pushSubscriptionsRouter);
+app.use(notificationsAdminRouter);
 
 app.use('*', (_, res) => {
   res.status(404).json({global: ['api.global.notFound']});
